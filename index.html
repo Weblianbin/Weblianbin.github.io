@@ -1,19 +1,158 @@
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="author" content="lianbin">
-        <title>我的个人主页</title>
-        <style>
-            html,body{
-                height: 100%;
-                padding: 0;
-                margin: 0;
-                background-color: yellow;
+
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="lianbin">
+    <title>图灵机器人</title>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100px;
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .show {
+            /* dotted 圆点虚线 */
+            border-bottom: 5px dotted orangered;
+            padding-bottom: 10px;
+        }
+
+        .show p {
+            color: red;
+        }
+
+        #inputContent {
+            height: 200px;
+            width: 600px;
+            border: 1px solid red;
+            padding: 10px;
+        }
+
+        #inputContent:focus {
+            outline: none;
+        }
+
+        .addDiv {
+            border-bottom: 3px dotted lightgreen;
+            padding: 1px;
+        }
+
+        .blue {
+            color: blue;
+        }
+
+        .orangered {
+            color: orangered;
+        }
+        .red{
+            color: red !important;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>图灵机器人</h1>
+        <div class="show">
+            <p>请再下面的框中输入你要和机器人对话的内容:</p>
+            <div id="inputContent" contentEditable='true'>
+
+            </div>
+        </div>
+        <div id="showContent">
+        </div>
+    </main>
+    <script>
+        // 1.创建 XMLHttpRequest对象
+        var xhr = new XMLHttpRequest()
+        // 2.监听请求状态
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                var data = JSON.parse(xhr.responseText)
+                console.log(data)
+                // 文本类
+                if (data.code == '100000') {
+                    $('#showContent').append(`
+                                    <div class="addDiv">
+                                        <div>
+                                             <p><span class="blue">提问:</span><span class="orangered">${$('#inputContent').text()}</span></p>        
+                                        </div>  
+                                        <div>
+                                            <p><span class="blue">回答:</span><span class="red">${data.text}</span></p> 
+                                        </div>  
+                                     </div>
+                                `)
+                    $('#inputContent').html('')
+                }
+                // 链接类
+                if (data.code == '200000') {
+                    $('#showContent').append(`
+                                    <div class="addDiv">
+                                        <div>
+                                             <p><span class="blue">提问:</span><span class="orangered">${$('#inputContent').text()}</span></p>        
+                                        </div>  
+                                        <div>
+                                          <p><span class="blue">回答:</span><span class="red">${data.text}</span><a href="${data.url}" class="red">点我跳转</a></p>
+                                          
+                                        </div>  
+                                     </div>
+                                `)
+                    $('#inputContent').html('')
+                }
+                // 新闻类
+                if (data.code == '302000') {
+                    $('#showContent').append(`
+                                    <div class="addDiv">
+                                        <div>
+                                             <p><span class="blue">提问:</span><span class="orangered">${$('#inputContent').text()}</span></p>        
+                                        </div>  
+                                        <div>
+                                          <p>
+                                            <span class="blue">回答:</span>
+                                            <span class="red">${data.text}</span>
+                                            <span>${data.list[0].article}</span>
+                                            <a href="${data.url}">点我跳转</a></p>
+                                          
+                                        </div>  
+                                     </div>
+                                `)
+                    $('#inputContent').html('')
+                }
+                // 菜谱类
+                if (data.code == '308000') {
+                    $('#showContent').append(`
+                                    <div class="addDiv">
+                                        <div>
+                                             <p><span class="blue">提问:</span><span class="orangered">${$('#inputContent').text()}</span></p>        
+                                        </div>  
+                                        <div>
+                                          <p><span class="blue">回答:</span><span class="red">${data.text}</span><a href="${data.url}">点我跳转</a></p>
+                                          
+                                        </div>  
+                                     </div>
+                                `)
+                    $('#inputContent').html('')
+                }
+
+                // 在页面加载完再清空输入
+
             }
-        </style>
-    </head>
-    <body>
-        <h1>祝你七夕快乐</h1>
-        <p>你最爱的连斌</p>
-    </body>
+
+        }
+        $('#inputContent').keydown(function (e) {
+            if (e.keyCode == 13) {
+                xhr.open('get', `http://www.tuling123.com/openapi/api?key=588881add9714a46af72d77349dde62e&info=${$(this).text()}`, true)
+                xhr.send()
+            }
+        })
+    </script>
+</body>
+
 </html>
